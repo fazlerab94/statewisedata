@@ -1,0 +1,27 @@
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+req = requests.get("https://prsindia.org/covid-19/cases")
+soup = BeautifulSoup(req.text , "html.parser")
+
+rows = soup.find('table',{'class':'table table-striped table-bordered'}).find('tbody').find_all('tr')
+
+statelist = []
+
+for row in rows:
+    dic={}
+
+    dic['State/UT'] = row.find_all('td')[1].text
+    dic['Confirmed Cases'] = row.find_all('td')[2].textgit
+    dic['Active Cases'] = row.find_all('td')[3].text
+    dic['Cured/Discharged'] = row.find_all('td')[4].text
+    dic['Death'] = row.find_all('td')[5].text
+
+
+
+    statelist.append(dic)
+
+df = pd.DataFrame(statelist)
+df.to_excel('E:\\coronacases_statelist_data.xlsx', index=False)  
+df.to_csv('Desktop\\statelist_data.csv', index=False)  
